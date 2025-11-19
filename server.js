@@ -4,7 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import juegoRoutes from "./routes/juegos.js";
-import reseñaRoutes from "./routes/reseñas.js";
+import resenaRoutes from "./routes/resenas.js";
 
 // Configurar variables de entorno
 dotenv.config();
@@ -27,7 +27,7 @@ mongoose
 
 // Ruta 
 app.use("/api/juegos", juegoRoutes);
-app.use("/api/reseñas", reseñaRoutes);
+app.use("/api/resenas", resenaRoutes);
 
 // Ruta principal
 app.get("/", (req, res) => {
@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
     mensaje: " API funcionando",
     endpoints: {
       juegos: "/api/juegos",
-      reseñas: "/api/reseñas"
+      reseñas: "/api/resenas"
     }
   });
 });

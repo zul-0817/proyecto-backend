@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
 
-const reseñaSchema = new Schema({
+const resenaSchema = new Schema({
   juegoId: {
     type: Schema.Types.ObjectId,
     ref: "Juego",
@@ -14,7 +14,7 @@ const reseñaSchema = new Schema({
     min: [1, "La puntuación mínima es 1"],
     max: [5, "La puntuación máxima es 5"]
   },
-  textoReseña: {
+  textoResena: {
     type: String,
     required: [true, "El texto de la reseña es obligatorio"],
     minlength: [10, "La reseña debe tener al menos 10 caracteres"],
@@ -41,4 +41,4 @@ const reseñaSchema = new Schema({
   timestamps: true
 });
 
-export default model("reseña", reseñaSchema);
+export default model("resena", resenaSchema);
