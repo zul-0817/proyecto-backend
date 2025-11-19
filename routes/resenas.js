@@ -26,7 +26,7 @@ router.get("/juego/:juegoId", async (req, res) => {
 // POST - Crear nueva reseña
 router.post("/", async (req, res) => {
   try {
-    const nuevaResena = new Reseña(req.body);
+    const nuevaResena = new Resena(req.body);
     const resenaGuardada = await nuevaResena.save();
     res.status(201).json(resenaGuardada);
   } catch (error) {
