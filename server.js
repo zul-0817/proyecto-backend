@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 
 import juegoRoutes from "./routes/juegos.js";
 import resenaRoutes from "./routes/resenas.js";
+import statsRoutes from "./routes/statsroutes.js";
 
 // Configurar variables de entorno
 dotenv.config();
@@ -28,6 +29,7 @@ mongoose
 // Ruta 
 app.use("/api/juegos", juegoRoutes);
 app.use("/api/resenas", resenaRoutes);
+app.use("/api/stats", statsRoutes)
 
 // Ruta principal
 app.get("/", (req, res) => {
