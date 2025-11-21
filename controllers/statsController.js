@@ -14,46 +14,39 @@ export const obtenerEstadisticas = async (req, res) => {
     const juegosCompletados = await Juego.countDocuments({ completado: true });
 
     // -------------------------------
-    // PROMEDIO DE PROGRESO
+    // HORAS TOTALES JUGADAS (Reseñas)
     // -------------------------------
-    const progreso = await Juego.aggregate([
-      { $group: { _id: null, promedio: { $avg: "$progreso" } } }
+    const horasData = await Resena.aggregate([
+      { $group: { _id: null, total: { $sum: "$horasJugadas" } } }
     ]);
 
-    const promedioProgreso = progreso[0]?.promedio || 0;
+    const horasTotales = horasData[0]?.total || 0;
 
     // -------------------------------
-    // PROMEDIO DE PUNTUACIÓN POR JUEGO
+    // PROMEDIO GENERAL DE PUNTUACIÓN
     // -------------------------------
-    const puntuacionPorJuego = await Resena.aggregate([
-      {
-        $group: {
-          _id: "$juegoId",
-          promedioPuntuacion: { $avg: "$puntuacion" }
-        }
-      }
+    const puntuacionData = await Resena.aggregate([
+      { $group: { _id: null, promedio: { $avg: "$puntuacion" } } }
     ]);
 
-    // -------------------------------
-    // PROMEDIO GENERAL DE TODAS LAS RESEÑAS
-    // -------------------------------
-    const puntuacionGeneral = await Resena.aggregate([
-      {
-        $group: {
-          _id: null,
-          promedio: { $avg: "$puntuacion" }
-        }
-      }
-    ]);
+    const puntuacionPromedio = puntuacionData[0]?.promedio || 0;
 
-    const puntuacionPromedioGeneral = puntuacionGeneral[0]?.promedio || 0;
+    // -------------------------------
+    // JUEGOS EN PROGRESO Y PENDIENTES
+    // -------------------------------
+    const juegosEnProgreso = await Juego.countDocuments({ progreso: { $gt: 0, $lt: 100 } });
+    const juegosPendientes = await Juego.countDocuments({ progreso: 0 });
 
+    // -------------------------------
+    // RESPUESTA FINAL
+    // -------------------------------
     res.json({
       totalJuegos,
       juegosCompletados,
-      promedioProgreso,
-      puntuacionPromedioGeneral,
-      puntuacionPorJuego
+      horasTotales,
+      puntuacionPromedio: Number(puntuacionPromedio.toFixed(2)),
+      juegosEnProgreso,
+      juegosPendientes
     });
 
   } catch (error) {
