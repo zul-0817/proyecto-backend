@@ -38,6 +38,66 @@ export const obtenerEstadisticas = async (req, res) => {
     const juegosPendientes = await Juego.countDocuments({ progreso: 0 });
 
     // -------------------------------
+    // 🔥 TOP 5 JUEGOS MÁS JUGADOS
+    // -------------------------------
+    const top5Juegos = await Resena.aggregate([
+      {
+        $group: {
+          _id: "$juegoId",
+          totalHoras: { $sum: "$horasJugadas" }
+        }
+      },
+      { $sort: { totalHoras: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: "juegos",
+          localField: "_id",
+          foreignField: "_id",
+          as: "juegoInfo"
+        }
+      },
+      { $unwind: "$juegoInfo" },
+      {
+        $project: {
+          titulo: "$juegoInfo.titulo",
+          horas: "$totalHoras"
+        }
+      }
+    ]);
+
+    // -------------------------------
+    // 📊 GÉNEROS FAVORITOS (CORREGIDO)
+    // -------------------------------
+    const generosFavoritos = await Juego.aggregate([
+      {
+        $match: { genero: { $exists: true, $ne: null } } // Validar que exista el campo
+      },
+      {
+        $group: {
+          _id: "$genero", // Campo en singular
+          cantidad: { $sum: 1 }
+        }
+      },
+      { $sort: { cantidad: -1 } },
+      { $limit: 5 },
+      {
+        $project: {
+          genero: "$_id",
+          cantidad: 1,
+          _id: 0
+        }
+      }
+    ]);
+
+    // Calcular porcentajes
+    const totalGeneros = generosFavoritos.reduce((sum, g) => sum + g.cantidad, 0);
+    const generosConPorcentaje = generosFavoritos.map(g => ({
+      genero: g.genero,
+      porcentaje: totalGeneros > 0 ? Math.round((g.cantidad / totalGeneros) * 100) : 0
+    }));
+
+    // -------------------------------
     // RESPUESTA FINAL
     // -------------------------------
     res.json({
@@ -46,7 +106,9 @@ export const obtenerEstadisticas = async (req, res) => {
       horasTotales,
       puntuacionPromedio: Number(puntuacionPromedio.toFixed(2)),
       juegosEnProgreso,
-      juegosPendientes
+      juegosPendientes,
+      top5Juegos,
+      generosFavoritos: generosConPorcentaje
     });
 
   } catch (error) {
@@ -54,3 +116,4 @@ export const obtenerEstadisticas = async (req, res) => {
     res.status(500).json({ message: "Error al obtener estadísticas" });
   }
 };
+
