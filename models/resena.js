@@ -32,6 +32,7 @@ const resenaSchema = new Schema({
       message: "Dificultad no válida"
     },
     default: "Media"
+    
   },
   recomendaria: {
     type: Boolean,

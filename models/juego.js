@@ -62,6 +62,13 @@ const juegoSchema = new Schema({
     type: String,
     maxlength: [2000, "Descripción demasiado larga"]
   },
+  progreso: {
+  type: Number,
+  min: 0,
+  max: 100,
+  default: 0
+},
+
   completado: {
     type: Boolean,
     default: false
