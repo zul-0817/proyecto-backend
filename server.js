@@ -12,8 +12,20 @@ dotenv.config();
 
 const app = express();
 
+// Configuración de CORS para permitir peticiones desde GitHub Pages
+const corsOptions = {
+  origin: [
+    'http://localhost:5173', // Desarrollo local (Vite)
+    'http://localhost:5174', 
+    'https://zul-0817.github.io', // GitHub Pages
+    'https://yasha2583.github.io' // Por si usan el otro usuario
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middlewares
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Obtener URI de MongoDB desde .env
@@ -23,28 +35,27 @@ const PORT = process.env.PORT || 5000;
 // Conexión a MongoDB
 mongoose
   .connect(MONGO_URI)
-  .then(() => console.log(" Conectado a MongoDB Atlas"))
-  .catch((err) => console.error(" Error de conexión a MongoDB:", err));
+  .then(() => console.log("✅ Conectado a MongoDB Atlas"))
+  .catch((err) => console.error("❌ Error de conexión a MongoDB:", err));
 
-// Ruta 
+// Rutas
 app.use("/api/juegos", juegoRoutes);
 app.use("/api/resenas", resenaRoutes);
-app.use("/api/stats", statsRoutes)
+app.use("/api/stats", statsRoutes);
 
 // Ruta principal
 app.get("/", (req, res) => {
   res.json({ 
-    mensaje: " API funcionando",
+    mensaje: "✅ API funcionando",
     endpoints: {
       juegos: "/api/juegos",
-      reseñas: "/api/resenas"
+      reseñas: "/api/resenas",
+      estadísticas: "/api/stats"
     }
   });
 });
 
-
 // Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
 });
-
